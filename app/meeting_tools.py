@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 from app.recall_client import RecallClient, RecallError
 
 logger = logging.getLogger("meeting-demo")
+CHAT_CHARACTER_LIMIT = 500
 
 
 class ToolError(Exception):
@@ -25,6 +26,8 @@ class MeetingState:
 def public_webpage_url(value: str) -> str:
     """Reject credentials and local addresses before passing a URL to Recall."""
     url = value.strip()
+    if len(url) > CHAT_CHARACTER_LIMIT:
+        raise ToolError(f"Use a page URL of at most {CHAT_CHARACTER_LIMIT} characters so it fits in chat.")
     try:
         parsed = urlsplit(url)
         hostname = (parsed.hostname or "").encode("idna").decode("ascii")
@@ -106,9 +109,9 @@ class MeetingTools:
     async def send_chat_message(self, message: str) -> str:
         """Post requested text to everyone. Use the link tool for the current page."""
         self._require_active()
-        if not message.strip() or len(message) > 500:
-            await self._post_status("Message not sent: use 1 to 500 characters.")
-            raise ToolError("Google Meet messages must contain 1 to 500 characters.")
+        if not message.strip() or len(message) > CHAT_CHARACTER_LIMIT:
+            await self._post_status(f"Message not sent. Use 1 to {CHAT_CHARACTER_LIMIT} characters.")
+            raise ToolError(f"Google Meet messages must contain 1 to {CHAT_CHARACTER_LIMIT} characters.")
         await self._call_recall(self.client.send_chat_message(self.bot_id, message))
         return "Recall accepted the chat message."
 
@@ -125,7 +128,7 @@ class MeetingTools:
         """Stop sharing while preserving conversation and the last page URL."""
         self._require_active()
         await self._call_recall(self.client.stop_screenshare(self.bot_id))
-        await self._post_status("Stopped sharing.")
+        await self._post_status("Requested that sharing stop.")
         return "Recall accepted the request to stop sharing."
 
     async def leave_call(self) -> str:

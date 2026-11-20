@@ -117,10 +117,10 @@ async def run_tool(tool_name: str, request: Request):
         raise HTTPException(401, "Missing, invalid, or expired meeting session.")
     if tool_name not in TOOL_ARGUMENTS:
         raise HTTPException(404, "Unknown meeting tool.")
-    arguments = await read_tool_arguments(request, tool_name)
     try:
-        # Finish before the provider's 30-second deadline, including lock contention.
+        # Include body parsing and lock contention in the provider deadline.
         async with asyncio.timeout(25):
+            arguments = await read_tool_arguments(request, tool_name)
             await session.ready.wait()
             async with session.lock:
                 if session.closed or time.monotonic() >= session.expires_at or session.tools is None:

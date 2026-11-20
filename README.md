@@ -1,6 +1,6 @@
 # ElevenLabs meeting agent
 
-A small Google Meet demo using [Recall.ai Output Media](https://docs.recall.ai/reference/bot_output_media_create), a hosted ElevenLabs voice agent, and five [meeting tools](https://docs.recall.ai/docs/meeting-agents-adding-tools-to-your-meeting-agents). Recall connects meeting audio directly to ElevenLabs. This Python app launches the bot and handles authenticated [webhook tools](https://elevenlabs.io/docs/eleven-agents/customization/tools/webhook-tools).
+A small Google Meet demo using [Recall.ai’s native ElevenLabs integration](https://docs.recall.ai/docs/meeting-agents-elevenlabs) and five [meeting tools](https://docs.recall.ai/docs/meeting-agents-adding-tools-to-your-meeting-agents). Recall connects meeting audio directly to ElevenLabs. This Python app launches the bot and handles authenticated [webhook tools](https://elevenlabs.io/docs/eleven-agents/customization/tools/webhook-tools).
 
 ## Behavior
 
@@ -26,12 +26,13 @@ Addressing the agent is an instruction to its model, not an enforced input filte
 
 ## Quickstart
 
-Set up and run the sample locally from this repository's checkout.
+Set up and run the sample locally.
 
-### 1. Install dependencies
+### 1. Clone the repository and install dependencies
 
 ```sh
-cd elevenlabs-meeting-agent
+git clone https://github.com/recallai/agent-demo-elevenlabs.git
+cd agent-demo-elevenlabs
 uv sync --locked
 ```
 
@@ -55,7 +56,7 @@ Fill in the root `.env`. It is ignored by Git and never sent to the browser. Exi
 | `ELEVENLABS_VOICE_ID` | Optional voice available to your ElevenLabs account; otherwise use its default. |
 | `SESSION_TIMEOUT_SECONDS` | Session limit, from `60` to `3600` seconds; defaults to `600`. |
 
-In the matching Recall dashboard, open **Agents → ElevenLabs** and save the ElevenLabs API key there too. Recall uses that saved key for the native voice connection. The local runtime needs the agent ID; the local ElevenLabs API key is used only by setup.
+In the Recall region and workspace selected by your Recall API key, open **Agents → ElevenLabs**. Save an ElevenLabs key with access to the hosted agent and select the data residency region for that agent. Recall uses those settings to open the voice connection. The local app uses the ElevenLabs key only to create or update the hosted agent and its tools.
 
 ### 3. Start an HTTPS tunnel
 
@@ -147,8 +148,7 @@ All five tools use webhook callbacks; Recall's native ElevenLabs integration doe
 - If the agent does not speak, check its ElevenLabs agent ID and the saved ElevenLabs credentials in the matching Recall workspace. Configure PCM audio with the setup command.
 - If voice works but tools fail, check that the app and tunnel are running, the tunnel points to **7862**, and the hosted tool URLs match `ELEVENLABS_TOOLS_ORIGIN`. After changing the tunnel origin, run setup with `--update`.
 - An invalid or expired tool session requires a newly launched bot. Restarting this app loses its in-memory sessions.
-- Chat messages are limited to 500 characters. Shared links use the same limit.
+- Chat messages and shared page URLs are limited to 500 characters so the link tool can post the full URL.
 - Share trusted public HTTPS webpages. The agent can display them but cannot read or interact with them; some sites may not load. Stopping sharing preserves the most recently accepted URL.
-- This sample has five tools. It does not implement mute, unmute, stop-listening, start-listening, or animated avatars. Addressed-request behavior is model-guided and needs live verification.
 - The app does not store recordings or meeting content. Hosted agent setup disables ElevenLabs voice recording, but does not promise zero provider transcript retention. Recall recordings follow the workspace's retention settings; this app never deletes them.
 - Meeting demonstrations and verification happen outside this repository. Local checks do not establish live voice, webpage rendering, or chat delivery.

@@ -15,7 +15,7 @@ API_BASE = "https://api.elevenlabs.io/v1/convai"
 TOOL_DEFINITIONS = {
     "start_screenshare": (
         "Display a public HTTPS webpage when asked. This does not read the page or post its link.",
-        "url", "The exact public HTTPS webpage URL the participant asked to display.",
+        "url", "The exact public HTTPS webpage URL the participant asked to display, up to 500 characters.",
     ),
     "send_chat_message": (
         "Post the participant's requested text to everyone in meeting chat.",
