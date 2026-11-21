@@ -134,7 +134,6 @@ The session defaults to 10 minutes, starting when the launcher requests the bot.
 | File | Responsibility |
 | --- | --- |
 | `app/web.py` | Serve the local form and run the launcher and tool servers. |
-| `app/meeting_url.py` | Validate meeting links. |
 | `app/templates/index.html` | Meeting-URL input and launch status. |
 | `app/agent.py` | Hosted agent instructions, webhook definitions, and setup/update commands. |
 | `app/tool_server.py` | Authenticate callbacks, bind sessions to bots, serialize actions, and expire sessions. |
