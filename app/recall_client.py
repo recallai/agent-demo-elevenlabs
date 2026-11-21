@@ -97,7 +97,7 @@ class RecallClient:
         return f"bot/{UUID(bot_id)}/{endpoint}/"
 
     async def create_bot(
-        self, meeting_url: str, agent_id: str, session_token: str,
+        self, meeting_url: str, agent_id: str, session_token: str, *, join_message: str,
     ) -> str:
         """Connect a hosted ElevenLabs agent and bind its tools to this session."""
         payload = {
@@ -126,15 +126,7 @@ class RecallClient:
             host = ""  # Let Create Bot handle malformed links.
         if host != "webex.com" and not host.endswith(".webex.com"):
             payload["chat"] = {
-                "on_bot_join": {
-                    "send_to": "everyone",
-                    "message": (
-                        "Address me as Assistant or elevenlabs demo. "
-                        "I can answer questions, show public webpages, send text or the "
-                        "current page link in chat, stop sharing, and leave the meeting."
-                    ),
-                    "pin": False,
-                },
+                "on_bot_join": {"send_to": "everyone", "message": join_message, "pin": False},
             }
         result = await self._request(
             "POST", "bot/", "the meeting agent request", payload,
