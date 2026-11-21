@@ -117,7 +117,10 @@ class RecallClient:
             },
         }
         # Recall supports bot chat on Zoom, Google Meet, and Microsoft Teams.
-        host = urlsplit(meeting_url).hostname or ""
+        try:
+            host = urlsplit(meeting_url).hostname or ""
+        except ValueError:
+            host = ""  # Let Create Bot handle malformed links.
         if host != "webex.com" and not host.endswith(".webex.com"):
             payload["chat"] = {
                 "on_bot_join": {
