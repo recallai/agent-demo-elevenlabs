@@ -1,6 +1,6 @@
 # ElevenLabs meeting agent
 
-Send an interactive meeting agent to Zoom, Google Meet, Microsoft Teams, or Webex. It answers questions aloud and takes spoken requests to share a webpage, post in chat where supported, or leave the call.
+Send an interactive meeting agent to Google Meet, Zoom, Microsoft Teams, or Webex. It answers questions aloud and takes spoken requests to share a webpage, post in chat where supported, or leave the call.
 
 Recall streams meeting audio directly to ElevenLabs. This Python app launches the bot and handles meeting actions through authenticated webhooks. See [Recall’s ElevenLabs integration](https://docs.recall.ai/docs/meeting-agents-elevenlabs), [Recall meeting tools](https://docs.recall.ai/docs/meeting-agents-adding-tools-to-your-meeting-agents), and [ElevenLabs webhook tools](https://elevenlabs.io/docs/eleven-agents/customization/tools/webhook-tools).
 
@@ -108,7 +108,7 @@ Keep this process running alongside the tunnel, then open [the launcher](http://
 
 ### 6. Send the agent to a meeting
 
-Join a Zoom, Google Meet, Microsoft Teams, or Webex meeting. Paste its direct meeting URL into the launcher and select **Send agent**. Admit **elevenlabs demo** if prompted.
+For your first test, start a Google Meet call at [meet.new](https://meet.new/). You can also use a link from any supported platform. Paste the direct meeting link into the launcher, select **Send agent**, and admit **elevenlabs demo** if prompted.
 
 ### 7. Try the agent
 
