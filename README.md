@@ -1,10 +1,12 @@
 # ElevenLabs meeting agent
 
-A small Google Meet demo using [Recall.ai’s native ElevenLabs integration](https://docs.recall.ai/docs/meeting-agents-elevenlabs) and five [meeting tools](https://docs.recall.ai/docs/meeting-agents-adding-tools-to-your-meeting-agents). Recall connects meeting audio directly to ElevenLabs. This Python app launches the bot and handles authenticated [webhook tools](https://elevenlabs.io/docs/eleven-agents/customization/tools/webhook-tools).
+Send an interactive meeting agent to Google Meet, Zoom, Microsoft Teams, or Webex. It answers questions aloud and takes spoken requests to share a webpage, post in chat where supported, or leave the call.
+
+Recall streams meeting audio directly to ElevenLabs. This Python app launches the bot and handles meeting actions through authenticated webhooks. See [Recall’s ElevenLabs integration](https://docs.recall.ai/docs/meeting-agents-elevenlabs), [Recall meeting tools](https://docs.recall.ai/docs/meeting-agents-adding-tools-to-your-meeting-agents), and [ElevenLabs webhook tools](https://elevenlabs.io/docs/eleven-agents/customization/tools/webhook-tools).
 
 ## Behavior
 
-Address the agent as **“Assistant”** or **“elevenlabs demo”**, followed by a question or command. It joins silently and posts an introduction in chat. Tool calls post their results in chat; requested text and links are their own confirmation.
+Address the agent as **“Assistant”** or **“elevenlabs demo”**, followed by a question or command. It joins silently. Where Recall supports meeting chat, it posts an introduction and tool feedback. Requested text and links are their own confirmation.
 
 | Action | Tool |
 | --- | --- |
@@ -22,7 +24,7 @@ Addressing the agent is an instruction to its model, not an enforced input filte
 - A Recall workspace and its regional REST API key, with the native ElevenLabs agent integration available.
 - An ElevenLabs account with Agents access and an API key that can create or update agents and tools.
 - An HTTPS tunnel, such as cloudflared, for ElevenLabs tool callbacks.
-- A Google account to host the meeting.
+- A meeting on one of the supported platforms.
 
 ## Quickstart
 
@@ -106,11 +108,11 @@ Keep this process running alongside the tunnel, then open [the launcher](http://
 
 ### 6. Send the agent to a meeting
 
-Create and join a meeting at [meet.new](https://meet.new/). Paste its URL into the launcher and select **Send agent**, then admit **elevenlabs demo** once it enters the waiting room.
+For your first test, start a Google Meet call at [meet.new](https://meet.new/). Paste the direct meeting link into the launcher, select **Send agent**, and admit **elevenlabs demo** if prompted.
 
 ### 7. Try the agent
 
-Each tool call posts its result in meeting chat.
+Try the chat commands in a meeting that allows bot chat. [Recall chat support](https://docs.recall.ai/docs/sending-chat-messages)
 
 | Try saying |
 | --- |
@@ -123,7 +125,7 @@ Each tool call posts its result in meeting chat.
 | “Assistant, stop sharing.” |
 | “Assistant, leave the meeting.” |
 
-Confirm that a new page replaces the previous share, its exact link appears in chat, and voice still works after sharing stops. A successful API request means Recall accepted the action; it does not prove that a webpage finished loading.
+Confirm that a new page replaces the previous share and voice still works after sharing stops. Where chat is available, check that the exact link appears. A successful API request means Recall accepted the action; it does not prove that a webpage finished loading.
 
 The session defaults to 10 minutes, starting when the launcher requests the bot. Expiration invalidates its tool token and requests departure. Ctrl+C also requests departure for active sessions. If departure cannot be confirmed, check the meeting or Recall dashboard before closing the tunnel. Launch another bot to repeat the demo.
 
@@ -139,7 +141,7 @@ The session defaults to 10 minutes, starting when the launcher requests the bot.
 | `app/recall_client.py` | Recall HTTP requests and clear errors. |
 | `app/config.py` | Read and validate `.env`. |
 
-The launcher creates a **four-core Google Meet bot** using `output_media.audio.kind = "elevenlabs"` and the hosted agent ID. A per-meeting `secret__session_token` is passed through ElevenLabs [dynamic variables](https://elevenlabs.io/docs/eleven-agents/customization/personalization/dynamic-variables) into the tools' `X-Session-Token` header. The server maps that token to the bot ID returned by Recall. The model does not choose a bot ID or receive the Recall API key.
+The launcher creates a **four-core bot** on each supported platform using `output_media.audio.kind = "elevenlabs"` and the hosted agent ID. A per-meeting `secret__session_token` is passed through ElevenLabs [dynamic variables](https://elevenlabs.io/docs/eleven-agents/customization/personalization/dynamic-variables) into the tools' `X-Session-Token` header. The server maps that token to the bot ID returned by Recall. The model does not choose a bot ID or receive the Recall API key.
 
 All five tools use webhook callbacks; Recall's native ElevenLabs integration does not execute client-side tools. Screen sharing uses a separate `kind: "webpage"` output, preserving the voice connection. Tool feedback failures never repeat the underlying action, and a failed share request preserves the last accepted URL.
 
