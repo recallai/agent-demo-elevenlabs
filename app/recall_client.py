@@ -6,6 +6,7 @@ from uuid import UUID
 import aiohttp
 
 from app.config import BOT_NAME
+from app.meeting_url import is_webex_meeting
 
 
 class RecallError(Exception):
@@ -88,33 +89,40 @@ class RecallClient:
         self, meeting_url: str, agent_id: str, session_token: str,
     ) -> str:
         """Connect a hosted ElevenLabs agent and bind its tools to this session."""
-        result = await self._request(
-            "POST", "bot/", "the meeting agent request",
-            {
-                "meeting_url": meeting_url,
-                "bot_name": BOT_NAME,
-                "variant": {"google_meet": "web_4_core"},
-                "output_media": {
-                    "audio": {
-                        "kind": "elevenlabs",
-                        "config": {
-                            "agent_id": agent_id,
-                            "dynamic_variables": {"secret__session_token": session_token},
-                        },
-                    },
-                },
-                "chat": {
-                    "on_bot_join": {
-                        "send_to": "everyone",
-                        "message": (
-                            "Address me as Assistant or elevenlabs demo. "
-                            "I can answer questions, show public webpages, send text or the "
-                            "current page link in chat, stop sharing, and leave the meeting."
-                        ),
-                        "pin": False,
+        payload = {
+            "meeting_url": meeting_url,
+            "bot_name": BOT_NAME,
+            "variant": {
+                "zoom": "web_4_core",
+                "google_meet": "web_4_core",
+                "microsoft_teams": "web_4_core",
+                "webex": "web_4_core",
+            },
+            "output_media": {
+                "audio": {
+                    "kind": "elevenlabs",
+                    "config": {
+                        "agent_id": agent_id,
+                        "dynamic_variables": {"secret__session_token": session_token},
                     },
                 },
             },
+        }
+        # Recall supports bot chat on Zoom, Google Meet, and Microsoft Teams.
+        if not is_webex_meeting(meeting_url):
+            payload["chat"] = {
+                "on_bot_join": {
+                    "send_to": "everyone",
+                    "message": (
+                        "Address me as Assistant or elevenlabs demo. "
+                        "I can answer questions, show public webpages, send text or the "
+                        "current page link in chat, stop sharing, and leave the meeting."
+                    ),
+                    "pin": False,
+                },
+            }
+        result = await self._request(
+            "POST", "bot/", "the meeting agent request", payload,
             read_json=True,
         )
         try:

@@ -1,15 +1,18 @@
 # Working on this sample
 
-Keep this a small, runnable Google Meet demo with a local meeting-URL form.
+Keep this a small, runnable demo with a local meeting-URL form for Zoom, Google
+Meet, Microsoft Teams, and Webex.
 
 - Use Recall's native ElevenLabs audio integration and hosted ElevenLabs webhook tools.
+- Request `web_4_core` on each supported platform.
 - Keep exactly five conversational tools: start_screenshare, send_chat_message,
   send_current_page_link, stop_screenshare, and leave_call.
 - Addressing the agent as Assistant or elevenlabs demo is a model instruction,
   not an enforced audio filter. Do not promise mute, listening controls, or an avatar.
-- Join silently and post the short capabilities introduction in meeting chat.
-- Each accepted tool posts chat feedback. Requested messages and links are their
-  own feedback. Feedback failures must not undo or repeat the underlying action.
+- Join silently and post a short introduction on platforms with Recall chat support.
+- Where Recall supports chat, each accepted tool posts feedback. Requested
+  messages and links are their own feedback. Feedback failures must not undo or
+  repeat the underlying action.
 - Display public HTTPS pages without reading or interacting with them. Preserve
   the last accepted page URL when a later request fails. Stop only the screen share.
 - Keep the launcher local. Expose only authenticated tool callbacks through the
