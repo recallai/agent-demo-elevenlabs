@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 
 from fastapi import FastAPI, HTTPException, Request
 
+from app.agent import INTRODUCTION
 from app.config import agent_id, require_env, session_timeout
 from app.meeting_tools import MeetingState, MeetingTools, ToolError
 from app.recall_client import RecallClient, RecallError
@@ -74,7 +75,9 @@ async def launch_session(meeting_url: str) -> str:
     session.expiration = asyncio.create_task(expire_session(session))
     try:
         async with session.lock:
-            bot_id = await client.create_bot(meeting_url, agent_id(), session.token)
+            bot_id = await client.create_bot(
+                meeting_url, agent_id(), session.token, join_message=INTRODUCTION,
+            )
             session.tools = MeetingTools(client, bot_id, MeetingState())
             session.ready.set()
         return bot_id

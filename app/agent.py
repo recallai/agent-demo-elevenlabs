@@ -35,6 +35,12 @@ TOOL_DEFINITIONS = {
     ),
 }
 
+INTRODUCTION = (
+    "Address me as Assistant or elevenlabs demo. "
+    "I can answer questions, show public webpages, send text or the "
+    "current page link in chat, stop sharing, and leave the meeting."
+)
+
 SYSTEM_PROMPT = """You are elevenlabs demo, a concise meeting assistant.
 Respond when a participant addresses you as Assistant or elevenlabs demo. For
 conversation directed at other people, silence, or a request to wait, call
